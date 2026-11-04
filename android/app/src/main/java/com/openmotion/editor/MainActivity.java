@@ -100,9 +100,7 @@ public final class MainActivity extends Activity {
 
             @Override
             public boolean onConsoleMessage(ConsoleMessage message) {
-                if (BuildConfig.DEBUG) {
-                    Log.d("OpenMotionWeb", message.message());
-                }
+                Log.d("OpenMotionWeb", message.message());
                 return true;
             }
         });
