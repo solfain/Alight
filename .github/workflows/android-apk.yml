@@ -4,10 +4,9 @@ on:
   push:
     branches:
       - 'arena/00659f22-alight'
-  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-apk:
@@ -59,3 +58,17 @@ jobs:
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish public APK download
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[publish-apk]')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="open-motion-apk-${GITHUB_RUN_NUMBER}"
+          gh release create "$TAG" \
+            android/app/build/outputs/apk/debug/app-debug.apk \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Open Motion Android APK (build $GITHUB_RUN_NUMBER)" \
+            --notes "Unofficial sideloadable WebView build of the MIT-licensed Open Motion editor. This is not the official Alight Motion or CapCut app. Install the APK only if you trust this source." \
+            --prerelease
