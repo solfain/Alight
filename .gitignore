@@ -1,0 +1,6 @@
+.arena/
+.gradle/
+**/build/
+**/local.properties
+*.apk
+*.aab

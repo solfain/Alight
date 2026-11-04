@@ -1,0 +1,57 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.openmotion.editor'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.openmotion.editor'
+        minSdk 23
+        targetSdk 34
+        versionCode 1
+        versionName '1.0.0'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    sourceSets {
+        main {
+            assets.srcDir(layout.buildDirectory.dir('generated/openMotionWebAssets'))
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-debug'
+        }
+        release {
+            minifyEnabled false
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.12.1'
+}
+
+def generatedWebAssets = layout.buildDirectory.dir('generated/openMotionWebAssets/public')
+
+tasks.register('copyOpenMotionWebAssets', Copy) {
+    from(rootProject.projectDir.parentFile) {
+        include 'index.html'
+        include 'manifest.webmanifest'
+        include 'sw.js'
+        include 'icons/**'
+    }
+    into(generatedWebAssets)
+}
+
+tasks.named('preBuild').configure {
+    dependsOn tasks.named('copyOpenMotionWebAssets')
+}
